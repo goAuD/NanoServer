@@ -19,6 +19,9 @@ NanoServer is a portable, GUI-based tool written in Python that replaces heavy s
 * **Laravel Support:** Automatically detects Laravel projects and serves from the `/public` directory.
 * **SQLite Manager:** Built-in tool to run SQL queries directly on your local database.
 * **Portable:** Perfect for school computers or restricted environments where you can't install complex software.
+* **Smart Error Handling (v1.1.0):**
+  * Automatic PHP installation detection with helpful setup instructions.
+  * Automatic port collision detection - finds the next available port if 8000 is busy.
 
 ## Requirements
 

@@ -2,6 +2,7 @@ import customtkinter as ctk
 import subprocess
 import threading
 import sqlite3
+import socket
 import os
 import webbrowser
 from tkinter import filedialog, messagebox
@@ -10,12 +11,41 @@ from tkinter import filedialog, messagebox
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("blue")
 
+def check_php_installed():
+    """Check if PHP is available in PATH"""
+    try:
+        result = subprocess.run(
+            ["php", "-v"], 
+            capture_output=True, 
+            text=True, 
+            creationflags=subprocess.CREATE_NO_WINDOW
+        )
+        return result.returncode == 0
+    except FileNotFoundError:
+        return False
+
+def is_port_in_use(port):
+    """Check if a port is already in use"""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', port)) == 0
+
+def find_available_port(start_port=8000, max_attempts=10):
+    """Find an available port starting from start_port"""
+    for i in range(max_attempts):
+        port = start_port + i
+        if not is_port_in_use(port):
+            return port
+    return None
+
 class NanoServerApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
+        # Check PHP first
+        self.php_available = check_php_installed()
+
         # Window Settings
-        self.title("NanoServer v1.0.0 - Pro Edition")
+        self.title("NanoServer v1.1.0 - Pro Edition")
         self.geometry("700x600")
         self.resizable(False, False)
 
@@ -23,12 +53,16 @@ class NanoServerApp(ctk.CTk):
         self.server_process = None
         self.is_running = False
         self.project_root = os.getcwd()
-        self.server_root = os.getcwd() # This might be /public for Laravel
+        self.server_root = os.getcwd()  # This might be /public for Laravel
         self.port = 8000
         self.db_name = "database.sqlite"
         self.is_laravel = False
 
         self.create_widgets()
+        
+        # Show PHP warning if not installed
+        if not self.php_available:
+            self.after(500, self.show_php_warning)
 
     def create_widgets(self):
         # 1. Header
@@ -120,8 +154,36 @@ class NanoServerApp(ctk.CTk):
         else:
             self.stop_php_server()
 
+    def show_php_warning(self):
+        """Show warning if PHP is not installed"""
+        messagebox.showwarning(
+            "PHP Not Found",
+            "PHP is not installed or not in your system PATH.\n\n"
+            "To fix this:\n"
+            "1. Download PHP from https://windows.php.net/download/\n"
+            "2. Extract to a folder (e.g., C:\\php)\n"
+            "3. Add that folder to your PATH environment variable\n"
+            "4. Restart NanoServer"
+        )
+        self.btn_toggle.configure(state="disabled")
+        self.label_status.configure(text="Status: PHP Not Found!", text_color="#e74c3c")
+
     def start_php_server(self):
-        # Construct command: php -S localhost:8000 -t "folder"
+        # Check PHP availability first
+        if not self.php_available:
+            self.show_php_warning()
+            return
+        
+        # Check for port collision and find available port
+        if is_port_in_use(self.port):
+            new_port = find_available_port(self.port)
+            if new_port is None:
+                messagebox.showerror("Error", f"Ports {self.port}-{self.port + 9} are all in use. Please close other applications.")
+                return
+            self.port = new_port
+            print(f"Port collision detected, using port {self.port}")
+        
+        # Construct command: php -S localhost:PORT -t "folder"
         cmd = ["php", "-S", f"localhost:{self.port}", "-t", self.server_root]
         
         try:
@@ -139,14 +201,20 @@ class NanoServerApp(ctk.CTk):
             self.btn_toggle.configure(text="Stop Server", fg_color="red", hover_color="darkred")
             self.btn_restart.configure(state="normal")
             
+            # Update browser button to show current port
+            self.btn_open_browser.configure(text=f"Open in Browser (:{self.port})")
+            
             # Print info to console
             print(f"--- Server Started ---")
             print(f"Project Root: {self.project_root}")
             print(f"Document Root: {self.server_root}")
             print(f"URL: http://localhost:{self.port}")
             
+        except FileNotFoundError:
+            self.php_available = False
+            self.show_php_warning()
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to start PHP: {e}")
+            messagebox.showerror("Error", f"Failed to start server: {e}")
 
     def stop_php_server(self):
         if self.server_process:
@@ -154,8 +222,10 @@ class NanoServerApp(ctk.CTk):
             self.server_process = None
             
         self.is_running = False
+        self.port = 8000  # Reset port for next start
         self.btn_toggle.configure(text="Start Server", fg_color="green", hover_color="darkgreen")
         self.btn_restart.configure(state="disabled")
+        self.btn_open_browser.configure(text="Open in Browser")
         print("--- Server Stopped ---")
 
     def restart_server(self):
