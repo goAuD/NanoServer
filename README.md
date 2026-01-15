@@ -7,6 +7,10 @@ NanoServer is a portable, GUI-based tool written in Python that replaces heavy s
 ![Python](https://img.shields.io/badge/Made%20with-Python-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+<br> ![NanoServer Screenshot](nanoserver.png)
+
+<br>
+
 ## Features
 
 * **Zero Configuration:** Just select your project folder and click Start.

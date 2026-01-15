@@ -15,7 +15,7 @@ class NanoServerApp(ctk.CTk):
         super().__init__()
 
         # Window Settings
-        self.title("NanoServer v3.0 - Pro Edition")
+        self.title("NanoServer v1.0.0 - Pro Edition")
         self.geometry("700x600")
         self.resizable(False, False)
 
