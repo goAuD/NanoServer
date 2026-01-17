@@ -77,6 +77,14 @@ class NanoServerApp(ctk.CTk):
         )
         self.label_subtitle.pack(pady=0)
         
+        self.label_family = ctk.CTkLabel(
+            self, 
+            text="Part of the Nano Product Family",
+            font=("Roboto", 10),
+            text_color="#00CED1"  # Nano cyan
+        )
+        self.label_family.pack(pady=(0, 5))
+        
         # 2. Server Control Section
         self.frame_web = ctk.CTkFrame(self)
         self.frame_web.pack(pady=10, padx=20, fill="x")
