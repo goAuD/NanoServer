@@ -159,6 +159,7 @@ Include relevant tech icons. Modern, clean, developer-focused design.
 | Product | Description |
 |---------|-------------|
 | **NanoServer** | Lightweight PHP dev environment with SQLite manager |
+| **NanoWOL** | Secure Wake-on-LAN & shutdown controller with RSA auth (Web Edition) |
 
 ### In Development
 | Product | Description |
