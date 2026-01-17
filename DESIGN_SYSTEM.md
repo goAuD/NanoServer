@@ -125,10 +125,41 @@ ctk.set_default_color_theme("blue")
 
 ---
 
-## Future Nano Products Ideas
+## GitHub Social Preview
 
-- **NanoNotes** - Lightweight Markdown note-taking
-- **NanoAPI** - Simple REST API testing tool
-- **NanoSSH** - Basic SSH client
-- **NanoGit** - Simple Git GUI
-- **NanoTimer** - Pomodoro/productivity timer
+### Dimensions
+- **Size:** 1280 x 640 px (2:1 aspect ratio)
+- **Format:** PNG
+
+### Design Parameters
+| Element | Value |
+|---------|-------|
+| Background | Dark navy gradient `#1a1a2e` → `#16213e` |
+| Logo | Left side, neon glow effect |
+| Title | White, bold, large |
+| Tagline | Light gray, smaller |
+| Tech icons | PHP, SQLite, Server |
+
+### AI Prompt Template
+```
+A professional GitHub repository social preview banner for "[PRODUCT_NAME]" - [TAGLINE]. 
+Dark navy blue gradient background (#1a1a2e to #16213e). 
+On the left side, show the [PRODUCT_NAME] logo (minimalist icon with nano/atom symbol). 
+Center-right: "[PRODUCT_NAME]" in large bold white Roboto font, 
+with tagline "[TAGLINE]" below in smaller gray text. 
+Include relevant tech icons. Modern, clean, developer-focused design. 
+1280x640 pixels (2:1 aspect ratio). No device frames.
+```
+
+---
+
+## Nano Product Family
+
+| Product | Description | Status |
+|---------|-------------|--------|
+| **NanoServer** | Lightweight PHP dev environment | ✅ Released |
+| **NanoMan** | Lightweight API testing (Postman alternative) | 🚧 In Development |
+| **NanoNotes** | Markdown note-taking | 💡 Planned |
+| **NanoSSH** | Basic SSH client | 💡 Planned |
+| **NanoGit** | Simple Git GUI | 💡 Planned |
+| **NanoTimer** | Pomodoro/productivity timer | 💡 Planned |
