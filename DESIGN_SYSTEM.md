@@ -155,11 +155,29 @@ Include relevant tech icons. Modern, clean, developer-focused design.
 
 ## Nano Product Family
 
-| Product | Description | Status |
-|---------|-------------|--------|
-| **NanoServer** | Lightweight PHP dev environment | ✅ Released |
-| **NanoMan** | Lightweight API testing (Postman alternative) | 🚧 In Development |
-| **NanoNotes** | Markdown note-taking | 💡 Planned |
-| **NanoSSH** | Basic SSH client | 💡 Planned |
-| **NanoGit** | Simple Git GUI | 💡 Planned |
-| **NanoTimer** | Pomodoro/productivity timer | 💡 Planned |
+### Released
+| Product | Description |
+|---------|-------------|
+| **NanoServer** | Lightweight PHP dev environment with SQLite manager |
+
+### In Development
+| Product | Description |
+|---------|-------------|
+| **NanoMan** | Lightweight API testing (Postman alternative). URL + Method + JSON → Response. No registration, instant startup. |
+
+### Planned (High Priority)
+| Product | Description |
+|---------|-------------|
+| **NanoResizer** | Drag & drop image optimizer. Resize + convert to WebP. Uses Pillow. |
+| **NanoHost** | Windows hosts file editor GUI. No more System32 hunting. |
+| **NanoBro** | Privacy-first browser. "On-demand connection" - no network until you press Enter. PyQtWebEngine/cefpython. |
+
+### Planned (Future)
+| Product | Description |
+|---------|-------------|
+| **NanoSnippets** | Code snippet manager with search. Tray app + SQLite storage. |
+| **NanoNotes** | Lightweight Markdown note-taking |
+| **NanoSSH** | Basic SSH client |
+| **NanoGit** | Simple Git GUI |
+| **NanoTimer** | Pomodoro/productivity timer |
+
