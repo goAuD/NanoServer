@@ -120,7 +120,7 @@ class NanoServerApp(ctk.CTk):
             fg_color="green",
             hover_color="darkgreen",
             command=self.toggle_server,
-            width=150
+            width=140
         )
         self.btn_toggle.pack(side="left", padx=10)
         
@@ -130,7 +130,7 @@ class NanoServerApp(ctk.CTk):
             fg_color="#e67e22",
             hover_color="#d35400",
             command=self.restart_server,
-            width=100,
+            width=140,
             state="disabled"
         )
         self.btn_restart.pack(side="left", padx=10)
