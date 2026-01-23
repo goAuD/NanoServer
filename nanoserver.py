@@ -24,11 +24,24 @@ from config import Config
 from server import PHPServer, check_php_installed
 from database import DatabaseManager
 
-# --- UI Configuration ---
-ctk.set_appearance_mode("Dark")
-ctk.set_default_color_theme("blue")
+# Import Nano Design System
+try:
+    from nano_theme import NANO_COLORS, NANO_FONTS, apply_nano_theme
+    apply_nano_theme()
+except ImportError:
+    # Fallback if nano_theme not available
+    ctk.set_appearance_mode("Dark")
+    ctk.set_default_color_theme("blue")
+    NANO_COLORS = {
+        "accent_green": "#4caf50",
+        "accent_red": "#e74c3c",
+        "accent_orange": "#e67e22",
+        "text_link": "#00CED1",
+        "laravel_red": "#ff2d20",
+    }
+    NANO_FONTS = {}
 
-VERSION = "1.2.0"
+VERSION = "1.2.1"
 
 
 class NanoServerApp(ctk.CTk):
@@ -81,7 +94,7 @@ class NanoServerApp(ctk.CTk):
             self, 
             text="Part of the Nano Product Family",
             font=("Roboto", 10),
-            text_color="#00CED1"  # Nano cyan
+            text_color=NANO_COLORS.get("text_link", "#00CED1")
         )
         self.label_family.pack(pady=(0, 5))
         
@@ -114,7 +127,7 @@ class NanoServerApp(ctk.CTk):
         self.label_status = ctk.CTkLabel(
             self.frame_web,
             text="Mode: Standard PHP/HTML",
-            text_color="#4caf50"
+            text_color=NANO_COLORS.get("accent_green", "#4caf50")
         )
         self.label_status.pack(pady=5)
         
@@ -125,8 +138,8 @@ class NanoServerApp(ctk.CTk):
         self.btn_toggle = ctk.CTkButton(
             self.frame_btns,
             text="Start Server",
-            fg_color="green",
-            hover_color="darkgreen",
+            fg_color=NANO_COLORS.get("accent_green", "#4caf50"),
+            hover_color="#45a049",
             command=self.toggle_server,
             width=140
         )
@@ -135,7 +148,7 @@ class NanoServerApp(ctk.CTk):
         self.btn_restart = ctk.CTkButton(
             self.frame_btns,
             text="Restart",
-            fg_color="#e67e22",
+            fg_color=NANO_COLORS.get("accent_orange", "#e67e22"),
             hover_color="#d35400",
             command=self.restart_server,
             width=140,
