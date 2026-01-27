@@ -121,6 +121,48 @@ class TestDatabase(unittest.TestCase):
             
         finally:
             os.remove(temp_db)
+    
+    def test_validate_table_name_valid(self):
+        """Test valid table names."""
+        from database import validate_table_name
+        self.assertTrue(validate_table_name("users"))
+        self.assertTrue(validate_table_name("User_Profiles"))
+        self.assertTrue(validate_table_name("_private"))
+        self.assertTrue(validate_table_name("table123"))
+    
+    def test_validate_table_name_invalid(self):
+        """Test invalid table names are rejected."""
+        from database import validate_table_name
+        self.assertFalse(validate_table_name("123table"))  # starts with number
+        self.assertFalse(validate_table_name("drop;users"))  # SQL injection attempt
+        self.assertFalse(validate_table_name("table-name"))  # hyphen not allowed
+        self.assertFalse(validate_table_name(""))  # empty
+    
+    def test_read_only_mode(self):
+        """Test read-only mode blocks write queries."""
+        with tempfile.NamedTemporaryFile(suffix='.sqlite', delete=False) as f:
+            temp_db = f.name
+        
+        try:
+            db = DatabaseManager(temp_db)
+            
+            # Create table first (write allowed by default)
+            success, _ = db.execute("CREATE TABLE test (id INTEGER)")
+            self.assertTrue(success)
+            
+            # Enable read-only mode
+            db.read_only = True
+            
+            # Write should be blocked
+            success, result = db.execute("INSERT INTO test VALUES (1)")
+            self.assertFalse(success)
+            self.assertIn("Read-only mode", result)
+            
+            # Read should still work
+            success, _ = db.execute("SELECT * FROM test")
+            self.assertTrue(success)
+        finally:
+            os.remove(temp_db)
 
 
 class TestServer(unittest.TestCase):

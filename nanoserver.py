@@ -1,5 +1,5 @@
 """
-NanoServer v1.2.0 - Lightweight PHP Development Environment
+NanoServer v1.2.2 - Lightweight PHP Development Environment
 Main UI module using CustomTkinter.
 
 Cross-platform compatible (Windows/Linux/macOS).
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 # Import our modules
 from config import Config
 from server import PHPServer, check_php_installed
-from database import DatabaseManager
+from database import DatabaseManager, is_read_query
 
 # Import Nano Design System
 try:
@@ -41,7 +41,7 @@ except ImportError:
     }
     NANO_FONTS = {}
 
-VERSION = "1.2.1"
+VERSION = "1.2.2"
 
 
 class NanoServerApp(ctk.CTk):
@@ -54,10 +54,11 @@ class NanoServerApp(ctk.CTk):
         self.config = Config()
         self.server = PHPServer(on_log=self.append_log)
         self.database = DatabaseManager()
+        self.database.read_only = True  # Default: read-only mode ON
         self.php_available = check_php_installed()
         
         # Window Settings
-        self.title(f"NanoServer v{VERSION} - Pro Edition")
+        self.title(f"NanoServer v{VERSION}")
         self.geometry(self.config.get("window_geometry", "700x780"))
         self.minsize(600, 700)  # Minimum size to show all elements
         
@@ -193,6 +194,16 @@ class NanoServerApp(ctk.CTk):
             font=("Roboto", 14, "bold")
         )
         self.label_db.pack(pady=5)
+        
+        # Read-only mode toggle
+        self.read_only_var = ctk.BooleanVar(value=True)  # Default: read-only ON
+        self.switch_readonly = ctk.CTkSwitch(
+            self.frame_db,
+            text="Read-only mode (blocks INSERT/UPDATE/DELETE)",
+            variable=self.read_only_var,
+            command=self.toggle_read_only
+        )
+        self.switch_readonly.pack(pady=5)
         
         self.entry_sql = ctk.CTkEntry(
             self.frame_db,
@@ -332,11 +343,35 @@ class NanoServerApp(ctk.CTk):
     
     # --- Database Functions ---
     
+    def toggle_read_only(self):
+        """Toggle read-only mode for SQL queries."""
+        self.database.read_only = self.read_only_var.get()
+        mode = "enabled" if self.database.read_only else "disabled"
+        logger.info(f"Read-only mode {mode}")
+    
     def run_sql(self):
         """Execute SQL query from input field."""
         query = self.entry_sql.get().strip()
         if not query:
             return
+        
+        # Check for destructive queries when not in read-only mode
+        if not self.database.read_only and not is_read_query(query):
+            # Check for especially destructive keywords
+            first_word = query.lstrip('; \t\n').split()[0].upper() if query.strip() else ''
+            destructive_keywords = {'DROP', 'DELETE', 'TRUNCATE', 'UPDATE', 'ALTER'}
+            
+            if first_word in destructive_keywords:
+                confirm = messagebox.askyesno(
+                    "Confirm Write Operation",
+                    f"You are about to execute a {first_word} query:\n\n{query[:100]}{'...' if len(query) > 100 else ''}\n\nThis may modify or delete data. Continue?"
+                )
+                if not confirm:
+                    self.label_sql_result.configure(
+                        text="Query cancelled by user",
+                        text_color="#e67e22"
+                    )
+                    return
         
         success, result = self.database.execute(query)
         

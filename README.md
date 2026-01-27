@@ -22,12 +22,12 @@ NanoServer is a portable, GUI-based tool written in Python that replaces heavy s
 * **Portable:** Perfect for school computers or restricted environments.
 * **Cross-Platform:** Works on Windows, Linux, and macOS.
 
-### New in v1.2.0
+### New in v1.2.2
 
 * **Modular Architecture:** Clean separation of concerns (server, database, config).
 * **Server Log Display:** Real-time PHP server output in the UI.
 * **Config Persistence:** Remembers your last project folder and settings.
-* **SQL Injection Protection:** Secure query parsing with transaction support.
+* **Direct SQL Access:** Run raw SQL queries on local SQLite databases with transaction support. Designed for local development only.
 * **Execution Tracing:** Optional logging decorator for debugging.
 * **Unit Tests:** Comprehensive test suite for core functionality.
 
@@ -55,6 +55,16 @@ pip install -r requirements.txt
 
 # Run
 python nanoserver.py
+```
+
+### Development Setup
+
+```bash
+# Install dev dependencies for testing
+pip install -r requirements-dev.txt
+
+# Run tests
+python -m pytest test_nanoserver.py -v
 ```
 
 ## Usage

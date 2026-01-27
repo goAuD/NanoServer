@@ -108,6 +108,13 @@ class PHPServer:
             logger.warning("Server already running")
             return False
         
+        # Validate document root exists
+        if not os.path.isdir(document_root):
+            error_msg = f"Document root does not exist: {document_root}"
+            logger.error(error_msg)
+            self.on_log(f"[NanoServer] ERROR: {error_msg}")
+            return False
+        
         # Check for port collision
         if is_port_in_use(port):
             new_port = find_available_port(port)

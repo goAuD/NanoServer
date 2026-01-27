@@ -10,6 +10,9 @@ __pycache__/
 # Config (user-specific)
 .nanoserver/
 
+# Internal docs
+INTERNAL_ENGINEERING_LOG.md
+
 # IDE
 .vscode/
 .idea/

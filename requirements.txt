@@ -1,1 +1,2 @@
-customtkinter
+# Runtime dependencies
+customtkinter>=5.0.0

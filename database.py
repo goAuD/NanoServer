@@ -1,12 +1,13 @@
 """
 NanoServer - Database Module
-Handles SQLite database queries with proper transaction handling.
-Fixes SQL injection vulnerabilities from v1.1.0.
+Handles SQLite database queries with transaction handling and read-only mode support.
+Includes table name validation for safe dynamic queries.
 """
 
 import sqlite3
 import os
 import logging
+import re
 from typing import List, Tuple, Any, Optional
 from contextlib import contextmanager
 
@@ -51,6 +52,24 @@ def is_read_query(query: str) -> bool:
     return first_word in read_only_keywords
 
 
+# Valid table name pattern: starts with letter/underscore, followed by alphanumeric/underscore
+TABLE_NAME_PATTERN = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*$')
+
+
+def validate_table_name(table_name: str) -> bool:
+    """
+    Validate that a table name is safe to use in SQL.
+    Prevents SQL injection through malformed table names.
+    
+    Args:
+        table_name: Name of the table to validate
+        
+    Returns:
+        True if table name is valid, False otherwise
+    """
+    return bool(TABLE_NAME_PATTERN.match(table_name))
+
+
 class DatabaseManager:
     """
     SQLite database manager with proper transaction handling.
@@ -66,6 +85,7 @@ class DatabaseManager:
         """
         self.db_path = db_path
         self._connection: Optional[sqlite3.Connection] = None
+        self.read_only = False  # Read-only mode flag
     
     def set_database(self, db_path: str) -> None:
         """Set the database path."""
@@ -127,6 +147,10 @@ class DatabaseManager:
         
         is_read = is_read_query(query)
         
+        # Block write queries in read-only mode
+        if self.read_only and not is_read:
+            return False, "Read-only mode: Write operations are disabled"
+        
         try:
             with self.connection() as conn:
                 cursor = conn.cursor()
@@ -169,7 +193,11 @@ class DatabaseManager:
     
     def get_table_info(self, table_name: str) -> List[dict]:
         """Get column info for a table."""
-        # Use parameterized query for table name safety
+        # Validate table name to prevent SQL injection
+        if not validate_table_name(table_name):
+            logger.warning(f"Invalid table name rejected: {table_name}")
+            return []
+        
         success, result = self.execute(f"PRAGMA table_info({table_name})")
         if success:
             return [
